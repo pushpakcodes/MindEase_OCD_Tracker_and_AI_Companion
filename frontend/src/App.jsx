@@ -9,6 +9,7 @@ import AiCompanion from './pages/AiCompanion';
 import Analytics from './pages/Analytics';
 import Exposure from './pages/Exposure';
 import EpisodeMode from './pages/EpisodeMode';
+import Community from './pages/Community';
 import PrivateRoute from './components/PrivateRoute';
 import Layout from './components/Layout';
 
@@ -30,6 +31,7 @@ function App() {
                     <Route path="/analytics" element={<Analytics />} />
                     <Route path="/exposure" element={<Exposure />} />
                     <Route path="/ai-companion" element={<AiCompanion />} />
+                    <Route path="/community" element={<Community />} />
                 </Route>
             </Route>
           </Routes>

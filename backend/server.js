@@ -9,6 +9,8 @@ const journalRoutes = require('./routes/journalRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const erpRoutes = require('./routes/erpRoutes');
 const compulsionRoutes = require('./routes/compulsionRoutes');
+const communityRoutes = require('./routes/communityRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 dotenv.config();
 
@@ -57,6 +59,8 @@ app.use('/api/moods', moodRoutes);
 app.use('/api/journal', journalRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/erp', erpRoutes);
+app.use('/api/community', communityRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 app.get('/', (req, res) => {
     res.send('MindEase API is running');

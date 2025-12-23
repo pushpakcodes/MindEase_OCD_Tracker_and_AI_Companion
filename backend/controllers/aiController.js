@@ -1,4 +1,5 @@
 const OpenAI = require('openai');
+const MoodLog = require('../models/MoodLog');
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY || 'dummy-key',
@@ -50,6 +51,101 @@ const chat = async (req, res) => {
         console.error('OpenAI API Error:', error);
         // Fallback to mock if API fails
         res.json({ reply: getMockResponse(message) });
+    }
+};
+
+const checkIn = async (req, res) => {
+    const { message, history } = req.body;
+
+    if (!message) {
+        return res.status(400).json({ message: 'Message is required' });
+    }
+
+    // Mock Response
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_key_here' || process.env.OPENAI_API_KEY === 'dummy-key') {
+         let analysis = null;
+         const lowerMsg = message.toLowerCase();
+         let moodLabel = 'Neutral';
+         let anxietyScore = 3;
+
+         if (lowerMsg.includes('happy') || lowerMsg.includes('good') || lowerMsg.includes('great')) {
+             moodLabel = 'Happy';
+             anxietyScore = 2;
+         } else if (lowerMsg.includes('sad') || lowerMsg.includes('bad') || lowerMsg.includes('depressed')) {
+             moodLabel = 'Sad';
+             anxietyScore = 5;
+         } else if (lowerMsg.includes('anxious') || lowerMsg.includes('panic') || lowerMsg.includes('scared')) {
+             moodLabel = 'Anxious';
+             anxietyScore = 8;
+         }
+
+         // Simple sleep extraction mock
+         let sleepHours = undefined;
+         const sleepMatch = lowerMsg.match(/slept (\d+) hours/);
+         if (sleepMatch) {
+            sleepHours = parseInt(sleepMatch[1]);
+         }
+
+         // Only log if meaningful keywords found or explicitly asked
+         if (moodLabel !== 'Neutral' || sleepHours) {
+             analysis = { moodLabel, anxietyScore, note: message, sleepHours };
+         }
+
+        if (analysis) {
+            try {
+                 const newMood = new MoodLog({
+                     user: req.user._id,
+                     moodLabel: analysis.moodLabel,
+                     anxietyScore: analysis.anxietyScore,
+                     note: analysis.note,
+                     sleepHours: analysis.sleepHours
+                 });
+                 await newMood.save();
+            } catch (err) {
+                console.error("Mock Mood Save Error:", err);
+            }
+        }
+
+        return res.json({
+            reply: "I'm listening. Tell me more about what's on your mind.",
+            analysis: analysis
+        });
+    }
+
+    try {
+        const messages = [
+             { role: "system", content: "You are an empathetic AI Check-in Coach. Engage in a natural conversation to understand the user's mood and anxiety. If the user's input allows you to infer their mood state, output a JSON object with 'reply' (conversational response) and 'analysis' (object with 'moodLabel', 'anxietyScore' (1-10), 'note', and optional 'sleepHours' (number) if mentioned). If you need more info, just return 'reply' in the JSON. Return valid JSON." },
+             ...(history || []).map(h => ({ role: h.sender === 'user' ? 'user' : 'assistant', content: h.text })),
+             { role: "user", content: message }
+        ];
+
+        const completion = await openai.chat.completions.create({
+            messages: messages,
+            model: "gpt-3.5-turbo",
+            response_format: { type: "json_object" }
+        });
+
+        const result = JSON.parse(completion.choices[0].message.content);
+        
+        if (result.analysis) {
+             try {
+                 const newMood = new MoodLog({
+                     user: req.user._id,
+                     moodLabel: result.analysis.moodLabel,
+                     anxietyScore: result.analysis.anxietyScore,
+                     note: result.analysis.note
+                 });
+                 await newMood.save();
+                 result.savedLog = newMood;
+             } catch (dbErr) {
+                 console.error('Failed to save mood log automatically:', dbErr);
+             }
+        }
+
+        res.json(result);
+    } catch (error) {
+        console.error('OpenAI Check-in Error:', error);
+        res.status(500).json({ message: 'Failed to process check-in' });
     }
 };
 
@@ -119,4 +215,4 @@ const deconstructThought = async (req, res) => {
     }
 };
 
-module.exports = { chat, generateExposureHierarchy, deconstructThought };
+module.exports = { chat, generateExposureHierarchy, deconstructThought, checkIn };

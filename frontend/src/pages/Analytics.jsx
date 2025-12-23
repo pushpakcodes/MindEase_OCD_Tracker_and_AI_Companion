@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { CheckCircle, Circle, Plus, Trash2, TrendingUp, ShieldAlert, Bot, Loader2, Save, Activity } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { CheckCircle, Circle, Plus, Trash2, TrendingUp, ShieldAlert, Bot, Loader2, Save, Activity, Award, Wind, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 
@@ -9,6 +9,7 @@ const Analytics = () => {
   const [moodLogs, setMoodLogs] = useState([]);
   const [erpTasks, setErpTasks] = useState([]);
   const [compulsions, setCompulsions] = useState([]);
+  const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
   
   // New Task State
@@ -28,14 +29,16 @@ const Analytics = () => {
 
   const fetchData = async () => {
     try {
-      const [moodRes, erpRes, compRes] = await Promise.all([
+      const [moodRes, erpRes, compRes, insightRes] = await Promise.all([
         axios.get('http://localhost:5000/api/moods', { withCredentials: true }),
         axios.get('http://localhost:5000/api/erp', { withCredentials: true }),
-        axios.get('http://localhost:5000/api/compulsions', { withCredentials: true })
+        axios.get('http://localhost:5000/api/compulsions', { withCredentials: true }),
+        axios.get('http://localhost:5000/api/analytics/insights', { withCredentials: true })
       ]);
       setMoodLogs(moodRes.data);
       setErpTasks(erpRes.data);
       setCompulsions(compRes.data);
+      setInsights(insightRes.data);
     } catch (error) {
       console.error('Error fetching data', error);
     } finally {
@@ -129,12 +132,77 @@ const Analytics = () => {
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
+  // Theme Data for Radar Chart
+  const themeData = insights?.themes 
+    ? Object.keys(insights.themes).map(key => ({
+        subject: key,
+        A: insights.themes[key],
+        fullMark: 100
+      }))
+    : [];
+
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto space-y-8">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-primary">Progress & Insights</h1>
         <p className="text-textSub">Visualize your recovery journey.</p>
       </header>
+      
+      {/* Tiny Wins & Drift Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+         {/* Tiny Wins */}
+         <motion.section 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-2xl shadow-sm border border-yellow-100"
+         >
+            <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-yellow-200 rounded-lg text-yellow-700">
+                    <Award className="w-5 h-5" />
+                </div>
+                <h2 className="text-xl font-bold text-yellow-800">Tiny Wins</h2>
+            </div>
+            {insights?.tinyWins?.length > 0 ? (
+                <ul className="space-y-3">
+                    {insights.tinyWins.map((win, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-yellow-900 bg-white/60 p-3 rounded-lg">
+                            <span className="text-xl">🎉</span>
+                            <span>{win}</span>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p className="text-yellow-700 opacity-70 italic">Keep tracking to unlock tiny wins!</p>
+            )}
+         </motion.section>
+
+         {/* Symptom Drift */}
+         <motion.section 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-2xl shadow-sm border border-indigo-100"
+         >
+            <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-indigo-200 rounded-lg text-indigo-700">
+                    <Wind className="w-5 h-5" />
+                </div>
+                <h2 className="text-xl font-bold text-indigo-900">Symptom Drift</h2>
+            </div>
+            {insights?.drift?.length > 0 ? (
+                <ul className="space-y-3">
+                    {insights.drift.map((drift, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-indigo-900 bg-white/60 p-3 rounded-lg">
+                            <span className="text-xl">🌊</span>
+                            <span>{drift}</span>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p className="text-indigo-700 opacity-70 italic">Not enough data for pattern detection yet.</p>
+            )}
+         </motion.section>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Charts Section */}
@@ -168,6 +236,36 @@ const Analytics = () => {
             </div>
         </section>
 
+        {/* Themes Radar Chart */}
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-secondary/20">
+            <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-purple-100 rounded-lg text-purple-600">
+                <Layers className="w-5 h-5" />
+            </div>
+            <h2 className="text-xl font-bold text-textMain">Theme Analyzer</h2>
+            </div>
+            
+            <div className="h-64 w-full flex items-center justify-center">
+            {themeData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={themeData}>
+                        <PolarGrid />
+                        <PolarAngleAxis dataKey="subject" />
+                        <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                        <Radar name="Intensity" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                        <Tooltip />
+                    </RadarChart>
+                </ResponsiveContainer>
+            ) : (
+                <div className="h-full w-full flex items-center justify-center text-textSub bg-aliceBlue rounded-xl">
+                Not enough data to analyze themes.
+                </div>
+            )}
+            </div>
+        </section>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Trigger Heatmap / Compulsion Frequency */}
         <section className="bg-white p-6 rounded-2xl shadow-sm border border-secondary/20">
             <div className="flex items-center gap-3 mb-6">
