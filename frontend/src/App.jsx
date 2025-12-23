@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 import Journal from './pages/Journal';
 import AiCompanion from './pages/AiCompanion';
 import Analytics from './pages/Analytics';
+import Exposure from './pages/Exposure';
+import EpisodeMode from './pages/EpisodeMode';
 import PrivateRoute from './components/PrivateRoute';
 import Layout from './components/Layout';
 
@@ -21,10 +23,12 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             
             <Route element={<PrivateRoute />}>
+                <Route path="/episode-mode" element={<EpisodeMode />} />
                 <Route element={<Layout />}>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/journal" element={<Journal />} />
                     <Route path="/analytics" element={<Analytics />} />
+                    <Route path="/exposure" element={<Exposure />} />
                     <Route path="/ai-companion" element={<AiCompanion />} />
                 </Route>
             </Route>

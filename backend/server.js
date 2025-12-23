@@ -8,6 +8,7 @@ const moodRoutes = require('./routes/moodRoutes');
 const journalRoutes = require('./routes/journalRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const erpRoutes = require('./routes/erpRoutes');
+const compulsionRoutes = require('./routes/compulsionRoutes');
 
 dotenv.config();
 

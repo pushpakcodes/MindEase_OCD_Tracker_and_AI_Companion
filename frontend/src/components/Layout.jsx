@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, LogOut, Bot, BarChart2, EyeOff } from 'lucide-react';
+import { Home, BookOpen, LogOut, Bot, BarChart2, EyeOff, List } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
 
@@ -11,6 +11,7 @@ const Layout = () => {
   const navItems = [
     { path: '/dashboard', icon: Home, label: 'Dashboard' },
     { path: '/journal', icon: BookOpen, label: 'Journal' },
+    { path: '/exposure', icon: List, label: 'ERP Ladder' },
     { path: '/analytics', icon: BarChart2, label: 'Progress' },
     { path: '/ai-companion', icon: Bot, label: 'AI Companion' },
   ];
