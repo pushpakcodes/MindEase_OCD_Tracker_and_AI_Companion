@@ -28,6 +28,10 @@ app.use(cookieParser());
 
 // Database Connection
 const connectDB = async () => {
+    if (mongoose.connection.readyState >= 1) {
+        return;
+    }
+
     try {
         console.log('Attempting to connect to MongoDB...');
         // In production (Vercel), we must have a valid MONGO_URI
