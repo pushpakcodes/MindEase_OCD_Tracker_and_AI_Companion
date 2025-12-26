@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Timer, Zap, AlertTriangle, Play, Square, Check, XCircle } from 'lucide-react';
 
 const Dashboard = () => {
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000');
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [moodLogs, setMoodLogs] = useState([]);
