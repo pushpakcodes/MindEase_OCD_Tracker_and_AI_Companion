@@ -66,7 +66,7 @@ const connectDB = async () => {
         // Remove options that are deprecated or cause issues with some drivers
         await mongoose.connect(process.env.MONGO_URI, {
             serverSelectionTimeoutMS: 5000,
-            family: 4 // Force IPv4 to avoid querySrv EBADNAME issues on some environments
+            // family: 4 // Removed to allow auto-detection, as some clusters require IPv6
         });
         console.log('MongoDB Connected');
     } catch (err) {
