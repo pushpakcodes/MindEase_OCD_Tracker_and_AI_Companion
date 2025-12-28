@@ -63,8 +63,10 @@ const connectDB = async () => {
         }
 
         // In production (Vercel), we must have a valid MONGO_URI
+        // Remove options that are deprecated or cause issues with some drivers
         await mongoose.connect(process.env.MONGO_URI, {
-            serverSelectionTimeoutMS: 5000
+            serverSelectionTimeoutMS: 5000,
+            family: 4 // Force IPv4 to avoid querySrv EBADNAME issues on some environments
         });
         console.log('MongoDB Connected');
     } catch (err) {
