@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { Send, Bot, User, RefreshCw, BrainCircuit, MessageSquare, HeartPulse } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const AiCompanion = () => {
-  const API_URL = ''; // Use relative paths via proxy
   const [mode, setMode] = useState('chat'); // 'chat' | 'deconstruct' | 'check-in'
   
   // Chat State
@@ -55,7 +54,7 @@ const AiCompanion = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(`${API_URL}/api/ai/chat`, { message: userMsg.content }, { withCredentials: true });
+      const res = await api.post('/api/ai/chat', { message: userMsg.content });
       const aiMsg = { id: Date.now() + 1, role: 'ai', content: res.data.reply };
       setMessages(prev => [...prev, aiMsg]);
     } catch (error) {
