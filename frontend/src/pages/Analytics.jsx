@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { CheckCircle, Circle, Plus, Trash2, TrendingUp, ShieldAlert, Bot, Loader2, Save, Activity, Award, Wind, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 
 const Analytics = () => {
-  const API_URL = ''; // Use relative paths via proxy
   const [moodLogs, setMoodLogs] = useState([]);
   const [erpTasks, setErpTasks] = useState([]);
   const [compulsions, setCompulsions] = useState([]);
@@ -31,10 +30,10 @@ const Analytics = () => {
   const fetchData = async () => {
     try {
       const [moodRes, erpRes, compRes, insightRes] = await Promise.all([
-        axios.get(`${API_URL}/api/moods`, { withCredentials: true }),
-        axios.get(`${API_URL}/api/erp`, { withCredentials: true }),
-        axios.get(`${API_URL}/api/compulsions`, { withCredentials: true }),
-        axios.get(`${API_URL}/api/analytics/insights`, { withCredentials: true })
+        api.get('/api/moods'),
+        api.get('/api/erp'),
+        api.get('/api/compulsions'),
+        api.get('/api/analytics/insights')
       ]);
       setMoodLogs(moodRes.data);
       setErpTasks(erpRes.data);
@@ -57,10 +56,10 @@ const Analytics = () => {
 
   const saveTask = async (title, level) => {
     try {
-      await axios.post(`${API_URL}/api/erp`, {
+      await api.post('/api/erp', {
         title,
         difficultyLevel: level
-      }, { withCredentials: true });
+      });
       fetchData(); // Refresh list
     } catch (error) {
       console.error('Error creating task', error);
@@ -71,9 +70,9 @@ const Analytics = () => {
     e.preventDefault();
     setIsGenerating(true);
     try {
-      const res = await axios.post(`${API_URL}/api/ai/generate-erp`, {
+      const res = await api.post('/api/ai/generate-erp', {
         fearTheme
-      }, { withCredentials: true });
+      });
       setGeneratedHierarchy(res.data.hierarchy);
     } catch (error) {
       console.error('Error generating hierarchy', error);
@@ -91,7 +90,7 @@ const Analytics = () => {
 
   const toggleTask = async (id) => {
     try {
-      await axios.patch(`${API_URL}/api/erp/${id}/toggle`, {}, { withCredentials: true });
+      await api.patch(`/api/erp/${id}/toggle`, {});
       setErpTasks(prev => prev.map(t => 
         t._id === id ? { ...t, isCompleted: !t.isCompleted } : t
       ));
@@ -100,10 +99,24 @@ const Analytics = () => {
     }
   };
 
+  const handleSeedData = async () => {
+    try {
+      setLoading(true);
+      await api.post('/api/seed', {});
+      await fetchData();
+      alert('Demo data loaded! You can now explore the insights.');
+    } catch (error) {
+      console.error('Error seeding data', error);
+      alert('Failed to load demo data. Make sure you are logged in.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const deleteTask = async (id) => {
     if (!window.confirm('Delete this goal?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/erp/${id}`, { withCredentials: true });
+      await api.delete(`/api/erp/${id}`);
       setErpTasks(prev => prev.filter(t => t._id !== id));
     } catch (error) {
       console.error('Error deleting task', error);

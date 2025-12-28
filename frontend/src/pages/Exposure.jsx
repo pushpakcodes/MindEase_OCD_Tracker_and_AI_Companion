@@ -19,9 +19,9 @@ const Exposure = () => {
     setHierarchy(null);
 
     try {
-      const res = await axios.post(`${API_URL}/api/ai/generate-erp`, {
+      const res = await api.post('/api/ai/generate-erp', {
         fearTheme
-      }, { withCredentials: true });
+      });
       setHierarchy(res.data.hierarchy);
     } catch (err) {
       console.error("ERP Generation Error:", err);

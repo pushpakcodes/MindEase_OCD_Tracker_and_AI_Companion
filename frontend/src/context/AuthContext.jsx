@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -9,19 +9,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Set default axios credentials to true
-  axios.defaults.withCredentials = true;
-
-  // Use relative path for both dev (via proxy) and prod (same domain)
-  // This avoids CORS issues and invalid domain errors
-  const API_URL = '';
-  
-  const getApiUrl = (endpoint) => {
-    return endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  };
-
   useEffect(() => {
-    const interceptor = axios.interceptors.response.use(
+    const interceptor = api.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error.response && error.response.status === 401) {
@@ -34,13 +23,13 @@ export const AuthProvider = ({ children }) => {
     checkUserLoggedIn();
 
     return () => {
-      axios.interceptors.response.eject(interceptor);
+      api.interceptors.response.eject(interceptor);
     };
   }, []);
 
   const checkUserLoggedIn = async () => {
     try {
-        const res = await axios.get(getApiUrl('/api/auth/me'));
+        const res = await api.get('/api/auth/me');
         setUser(res.data);
     } catch (error) {
         setUser(null);
@@ -50,17 +39,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const res = await axios.post(getApiUrl('/api/auth/login'), { email, password });
+    const res = await api.post('/api/auth/login', { email, password });
     setUser(res.data);
   };
 
   const register = async (name, email, password) => {
-    const res = await axios.post(getApiUrl('/api/auth/register'), { name, email, password });
+    const res = await api.post('/api/auth/register', { name, email, password });
     setUser(res.data);
   };
 
   const logout = async () => {
-    await axios.post(getApiUrl('/api/auth/logout'));
+    await api.post('/api/auth/logout');
     setUser(null);
   };
 

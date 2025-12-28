@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Trash2, Lock, Unlock, Calendar as CalendarIcon, Tag } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -9,7 +9,6 @@ import { format, isSameDay, parseISO } from 'date-fns';
 const SECRET_KEY = 'MINDEASE_CLIENT_SECRET'; // In prod, this should be user-defined
 
 const Journal = () => {
-  const API_URL = ''; // Use relative paths via proxy
   const [entries, setEntries] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,7 +26,7 @@ const Journal = () => {
 
   const fetchEntries = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/journal`);
+      const res = await api.get('/api/journal');
       setEntries(res.data);
     } catch (error) {
       console.error('Error fetching journal', error);
@@ -42,7 +41,7 @@ const Journal = () => {
         finalContent = CryptoJS.AES.encrypt(content, SECRET_KEY).toString();
       }
       
-      await axios.post(`${API_URL}/api/journal`, {
+      await api.post('/api/journal', {
         title,
         content: finalContent,
         tags: tags.split(',').map(t => t.trim()).filter(t => t),
@@ -58,7 +57,7 @@ const Journal = () => {
   const handleDelete = async (id) => {
     if(!window.confirm('Are you sure?')) return;
     try {
-      await axios.delete(`${API_URL}/api/journal/${id}`);
+      await api.delete(`/api/journal/${id}`);
       fetchEntries();
     } catch (error) {
       console.error('Error deleting entry', error);

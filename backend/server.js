@@ -1,7 +1,8 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
 const moodRoutes = require('./routes/moodRoutes');
@@ -11,8 +12,7 @@ const erpRoutes = require('./routes/erpRoutes');
 const compulsionRoutes = require('./routes/compulsionRoutes');
 const communityRoutes = require('./routes/communityRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
-
-dotenv.config();
+const seedRoutes = require('./routes/seedRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -68,6 +68,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/erp', erpRoutes);
 app.use('/api/community', communityRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/seed', seedRoutes);
 
 app.get('/', (req, res) => {
     res.send('MindEase API is running');

@@ -81,10 +81,10 @@ const AiCompanion = () => {
     setLoading(true);
 
     try {
-        const res = await axios.post(`${API_URL}/api/ai/check-in`, { 
+        const res = await api.post('/api/ai/check-in', { 
             message: userMsg.content,
             history: checkInMessages.map(m => ({ sender: m.role, text: m.content }))
-        }, { withCredentials: true });
+        });
         
         const aiMsg = { id: Date.now() + 1, role: 'ai', content: res.data.reply };
         setCheckInMessages(prev => [...prev, aiMsg]);
@@ -118,9 +118,9 @@ const AiCompanion = () => {
     setDeconstructionResult(null);
 
     try {
-      const res = await axios.post(`${API_URL}/api/ai/deconstruct-thought`, { 
+      const res = await api.post('/api/ai/deconstruct-thought', { 
         thought: thoughtInput 
-      }, { withCredentials: true });
+      });
       setDeconstructionResult(res.data.analysis);
     } catch (error) {
       console.error("Deconstruction error", error);

@@ -36,7 +36,7 @@ const getMockResponse = (message) => {
         ]);
     }
 
-    if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
+    if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey') || lowerMsg.includes('wassup') || lowerMsg.includes('sup') || lowerMsg.includes('howdy') || lowerMsg.includes('greeting')) {
         return pickRandom([
             "Hello! I'm here to support you. How are you feeling today?",
             "Hi there. You're not alone. What's on your mind?",
@@ -44,11 +44,19 @@ const getMockResponse = (message) => {
         ]);
     }
 
+    if (lowerMsg.includes('thank') || lowerMsg.includes('ok') || lowerMsg.includes('cool') || lowerMsg.includes('good') || lowerMsg.includes('bye')) {
+        return pickRandom([
+            "You're welcome. I'm here if you need anything else.",
+            "Take care. Remember to be kind to yourself.",
+            "Glad I could help. Wishing you a peaceful day."
+        ]);
+    }
+
     return pickRandom([
-        "I'm here for you. Tell me more about how you're feeling. We can work through this together.",
-        "That sounds difficult. How long have you been feeling this way?",
-        "I'm listening. It takes courage to share that. What do you think triggered this?",
-        "Thank you for sharing. Remember to be kind to yourself today. What usually helps you when you feel this way?"
+        "I'm here for you. Tell me more about how you're feeling.",
+        "That sounds important. How does that make you feel?",
+        "I'm listening. Feel free to share more if you're comfortable.",
+        "Thank you for sharing. What usually helps you when you feel this way?"
     ]);
 };
 

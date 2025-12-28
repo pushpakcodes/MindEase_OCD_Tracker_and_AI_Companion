@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import api from '../utils/api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Timer, Zap, AlertTriangle, Play, Square, Check, XCircle } from 'lucide-react';
 
 const Dashboard = () => {
-  const API_URL = ''; // Use relative paths via proxy
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [moodLogs, setMoodLogs] = useState([]);
@@ -37,7 +36,7 @@ const Dashboard = () => {
 
   const fetchMoodLogs = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/moods`, { withCredentials: true });
+      const res = await api.get('/api/moods');
       setMoodLogs(res.data);
       checkIfLoggedToday(res.data);
     } catch (error) {
@@ -58,11 +57,11 @@ const Dashboard = () => {
   const handleCheckIn = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/api/moods`, {
+      await api.post('/api/moods', {
         anxietyScore,
         note,
         moodLabel: anxietyScore > 7 ? 'High Anxiety' : anxietyScore > 4 ? 'Moderate' : 'Calm'
-      }, { withCredentials: true });
+      });
       fetchMoodLogs();
       setTodayLogged(true);
       setNote('');
@@ -84,14 +83,14 @@ const Dashboard = () => {
     const resistanceMinutes = Math.floor(timerSeconds / 60);
 
     try {
-      await axios.post(`${API_URL}/api/compulsions`, {
+      await api.post('/api/compulsions', {
         compulsionName,
         durationMinutes: 0, // Assuming duration of act is 0 for now
         resistanceDuration: resistanceMinutes,
         didResist,
         anxietyLevelBefore: 5, // Default for now
         notes: `Resistance Score: ${points}`
-      }, { withCredentials: true });
+      });
 
       alert(didResist 
         ? `Amazing! You resisted for ${formatTime(timerSeconds)} and earned ${points} points!` 
