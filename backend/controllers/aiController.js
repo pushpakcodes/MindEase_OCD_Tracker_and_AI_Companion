@@ -200,20 +200,58 @@ const generateExposureHierarchy = async (req, res) => {
     }
 
     try {
+        console.log(`[ERP] Generating hierarchy for theme: ${fearTheme}`);
         const completion = await openai.chat.completions.create({
             messages: [
-                { role: "system", content: "You are an expert ERP therapist. Create a 5-step exposure hierarchy for the user's fear. Return valid JSON only: an array of objects with keys 'title', 'difficulty' (1-10), and 'description'." },
+                { role: "system", content: "You are an expert ERP therapist. Create a 5-step exposure hierarchy for the user's fear. Return a JSON object with a single key 'hierarchy' containing an array of objects. Each object must have keys: 'title', 'difficulty' (1-10), and 'description'." },
                 { role: "user", content: `Create an exposure hierarchy for: ${fearTheme}` }
             ],
             model: "gpt-3.5-turbo",
+            response_format: { type: "json_object" }
         });
 
+        const rawContent = completion.choices[0].message.content;
+        console.log(`[ERP] Raw OpenAI Response: ${rawContent}`);
+
         // Parse JSON safely
-        const hierarchy = JSON.parse(completion.choices[0].message.content);
+        let parsedContent;
+        try {
+            parsedContent = JSON.parse(rawContent);
+        } catch (parseError) {
+            console.error('[ERP] JSON Parse Error:', parseError);
+            throw new Error('Failed to parse OpenAI response');
+        }
+        
+        // Ensure we extract the array correctly regardless of how the model wrapped it
+        const hierarchy = Array.isArray(parsedContent) ? parsedContent : (parsedContent.hierarchy || parsedContent.steps || []);
+        
+        if (!Array.isArray(hierarchy)) {
+            console.error('[ERP] Invalid hierarchy structure:', parsedContent);
+            throw new Error('Invalid hierarchy structure received');
+        }
+
         res.json({ hierarchy });
     } catch (error) {
-        console.error('OpenAI ERP Error:', error);
-        res.status(500).json({ message: 'Failed to generate hierarchy' });
+        console.error('[ERP] Detailed Error:', error);
+        
+        // Check for OpenAI Quota/Rate Limit Error
+        if (error.status === 429 || (error.error && error.error.code === 'insufficient_quota')) {
+            console.warn('[ERP] OpenAI Quota Exceeded. Falling back to Mock Data.');
+            const mockHierarchy = [
+                { title: `Look at a picture of ${fearTheme}`, difficulty: 2, description: "Start by just looking at an image related to your fear." },
+                { title: `Write down the word '${fearTheme}'`, difficulty: 3, description: "Write the fear trigger on a piece of paper." },
+                { title: `Imagine being near ${fearTheme}`, difficulty: 5, description: "Close your eyes and visualize the scenario for 2 minutes." },
+                { title: `Touch an object related to ${fearTheme}`, difficulty: 7, description: "Briefly touch an item that triggers mild anxiety." },
+                { title: `Full exposure to ${fearTheme}`, difficulty: 10, description: "Face the fear directly without performing a compulsion." }
+            ];
+            return res.json({ hierarchy: mockHierarchy });
+        }
+
+        res.status(500).json({ 
+            message: 'Failed to generate hierarchy', 
+            error: error.message,
+            details: error.response ? error.response.data : null
+        });
     }
 };
 

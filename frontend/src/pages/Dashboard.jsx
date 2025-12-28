@@ -10,7 +10,6 @@ const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [moodLogs, setMoodLogs] = useState([]);
-  const [todayLogged, setTodayLogged] = useState(false);
   const [anxietyScore, setAnxietyScore] = useState(5);
   const [note, setNote] = useState('');
 
@@ -38,19 +37,8 @@ const Dashboard = () => {
     try {
       const res = await api.get('/api/moods');
       setMoodLogs(res.data);
-      checkIfLoggedToday(res.data);
     } catch (error) {
       console.error('Error fetching logs', error);
-    }
-  };
-
-  const checkIfLoggedToday = (logs) => {
-    if (logs.length > 0) {
-      const lastLogDate = new Date(logs[0].createdAt).toDateString();
-      const today = new Date().toDateString();
-      if (lastLogDate === today) {
-        setTodayLogged(true);
-      }
     }
   };
 
@@ -63,7 +51,6 @@ const Dashboard = () => {
         moodLabel: anxietyScore > 7 ? 'High Anxiety' : anxietyScore > 4 ? 'Moderate' : 'Calm'
       });
       fetchMoodLogs();
-      setTodayLogged(true);
       setNote('');
     } catch (error) {
       console.error('Error submitting log', error);
@@ -232,14 +219,7 @@ const Dashboard = () => {
             transition={{ delay: 0.1 }}
             className="bg-surface p-6 rounded-2xl shadow-sm border border-secondary/20 h-full"
           >
-            <h2 className="text-xl font-semibold mb-4 text-textMain">Daily Check-in</h2>
-            {todayLogged ? (
-              <div className="text-center py-8">
-                <div className="text-4xl mb-2">🎉</div>
-                <p className="text-green-600 font-medium">You've checked in today!</p>
-                <p className="text-sm text-textSub mt-2">Great job keeping track.</p>
-              </div>
-            ) : (
+            <h2 className="text-xl font-semibold mb-4 text-textMain">Check-in</h2>
               <form onSubmit={handleCheckIn}>
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-textSub mb-2">
@@ -274,7 +254,6 @@ const Dashboard = () => {
                   Save Check-in
                 </button>
               </form>
-            )}
           </motion.div>
         </div>
 

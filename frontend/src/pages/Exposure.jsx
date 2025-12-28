@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { motion } from 'framer-motion';
 import { List, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
 
