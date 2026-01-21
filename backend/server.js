@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
     process.env.FRONTEND_URL, 
     'http://localhost:5173',
-    'https://mind-ease-ocd-tracker-and-ai-compan.vercel.app' // Explicit fallback
+    'https://mindease-ocd-companion.vercel.app' // Updated with your new domain
 ].filter(Boolean);
 
 app.use(cors({
@@ -45,6 +45,7 @@ app.use(cors({
     },
     credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -62,11 +63,9 @@ const connectDB = async () => {
             throw new Error('MONGO_URI is not defined in production environment.');
         }
 
-        // In production (Vercel), we must have a valid MONGO_URI
-        // Remove options that are deprecated or cause issues with some drivers
+        // In production, we must have a valid MONGO_URI
         await mongoose.connect(process.env.MONGO_URI, {
             serverSelectionTimeoutMS: 5000,
-            // family: 4 // Removed to allow auto-detection, as some clusters require IPv6
         });
         console.log('MongoDB Connected');
     } catch (err) {
@@ -86,7 +85,6 @@ const connectDB = async () => {
             }
         } else {
              // In production, we cannot fallback to in-memory, so we must exit if DB fails
-             // This ensures Render restarts the service to try again
              console.error('Critical Error: Database connection failed in production. Exiting.');
              process.exit(1);
         }
