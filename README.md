@@ -1,67 +1,41 @@
-# MindEase – OCD Tracker & AI Companion
-**This is an open-source project. Please contribute to help improve the lives of people who are living with OCD.**
+# MindEase OCD Tracker and AI Companion
 
-MindEase is a supportive and privacy-focused web application designed to help people understand their OCD patterns in a calm, structured, and non-judgmental space. It combines traditional mental-health tracking tools with AI-assisted Cognitive Behavioral Therapy (CBT) and Exposure and Response Prevention (ERP) techniques.
+MindEase is an open-source web application designed to help individuals manage OCD (Obsessive-Compulsive Disorder) through tracking, journaling, and AI-powered support. It combines cognitive behavioral therapy (CBT) and exposure and response prevention (ERP) techniques with modern technology to provide a supportive companion for mental wellness.
 
-The goal is not to diagnose or treat—MindEase simply gives users a safe place to reflect, track, and navigate their daily challenges with a little more clarity.
+## 🚀 Features
 
----
+*   **AI Companion**: Interact with an AI coach for:
+    *   **Chat**: General support and conversation.
+    *   **Deconstruction**: Analyze and break down intrusive thoughts.
+    *   **Check-in**: Guided emotional check-ins.
+*   **Tracking Tools**:
+    *   **Mood Logging**: Track your mood, anxiety levels, and sleep.
+    *   **Compulsion Tracking**: Log compulsion episodes to identify patterns.
+    *   **ERP Tasks**: Manage and track Exposure and Response Prevention tasks.
+*   **Analytics**: Visualize your progress with charts and insights on mood trends and compulsion frequency.
+*   **Journaling**: A secure space to write down thoughts and experiences also user can see CBT therapy logs . 
+*   **Community**: Connect with others (feature in development).
+*   **Secure Authentication**: User accounts protected with JWT authentication.
 
-## Features
+## 🛠️ Tech Stack
 
-###  AI & Smart Insights (New!)
-- **AI Check-in Coach**: Have a natural conversation to log your mood. The AI automatically extracts anxiety scores and sleep data from your chat.
-- **OCD Themes Analyzer**: Visual radar charts detect patterns in your logs (e.g., Contamination, Checking, Harm OCD).
-- **Symptom Drift Detection**: AI identifies hidden correlations (e.g., "Anxiety spikes on Sundays" or "Poor sleep triggers compulsions").
-- **Tiny Wins**: Micro-celebrations for resisting compulsions, maintaining streaks, and completing exposures.
+**Frontend:**
+*   [React](https://react.dev/) (v19)
+*   [Vite](https://vitejs.dev/) - Build tool
+*   [Tailwind CSS](https://tailwindcss.com/) (v4) - Styling
+*   [Framer Motion](https://www.framer.com/motion/) - Animations
+*   [Recharts](https://recharts.org/) - Data Visualization
+*   [Lucide React](https://lucide.dev/) - Icons
 
-###  Community Support (New!)
-- **Social Stories**: Share your recovery journey and read stories from others.
-- **Anonymous Posting**: Option to post stories and comments anonymously for complete privacy.
-- **Supportive Environment**: A safe space to feel less alone.
+**Backend:**
+*   [Node.js](https://nodejs.org/) & [Express](https://expressjs.com/)
+*   [MongoDB](https://www.mongodb.com/) - Database (Mongoose ODM)
+*   [OpenAI API](https://openai.com/) & [Google Gemini API](https://ai.google.dev/) - AI capabilities
+*   [JSON Web Token (JWT)](https://jwt.io/) - Authentication
 
-###  Tracking & Awareness
-- Daily check-ins for mood, anxiety, and intrusive thoughts
-- Compulsion and trigger tracking
-- Clear weekly, monthly, and long-term insights
-- Visual charts to highlight patterns and progress
+## 🏁 Getting Started
 
-###  Private Journal
-- Secure, personal space to document thoughts
-- Encrypted entries to protect privacy
-- Ability to search and revisit reflections over time
-
-###  AI Companion
-- Supportive, conversational guidance inspired by CBT principles
-- Structured “thought deconstruction” to help analyze intrusive thoughts
-- Grounding tools and gentle reframing suggestions
-- ERP ladder generator tailored to personal fear themes
-
-###  ERP & Habit Tools
-- Create and track ERP exposure tasks
-- “Compulsion Timer” to delay and resist urges
-- Resistance Score to gamify recovery
-- Routine and habit-building tools to encourage consistency
-
-###  UI/UX
-- Clean, simple, and calming interface
-- Smooth transitions without visual overload
-- Fully responsive layout for mobile and desktop
-- Quick Hide mode for privacy when needed
-
----
-
-## Tech Stack
-
-**Frontend:** React (Vite), Tailwind CSS, Framer Motion, Recharts
-**Backend:** Node.js, Express.js
-**Database:** MongoDB (local or in-memory fallback)
-**AI Integration:** OpenAI API (configurable)
-**Authentication:** JSON Web Tokens (JWT) with HTTP-only cookies
-
----
-
-## Getting Started
+Follow these instructions to set up the project locally.
 
 ### Prerequisites
 
